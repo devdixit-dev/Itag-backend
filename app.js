@@ -14,7 +14,7 @@ const app = express();
 const port = process.env.PORT || 4000
 
 app.use(cors({
-  origin: "*",
+  origin: "https://itagfinancials.vercel.app/",
   credentials: true
 }));
 

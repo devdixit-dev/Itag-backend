@@ -64,6 +64,6 @@ app.get('/admin/clients', async (req, res) => {
   });
 });
 
-app.listen(port, "0.0.0.0", () => {
+app.listen(port, () => {
   console.log(`server is running on 0.0.0.0:${port}`);
 });

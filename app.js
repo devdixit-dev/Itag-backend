@@ -49,8 +49,7 @@ app.post('/client-info', async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: 'New client added',
-      data: newClient
+      message: 'New client added'
     });
   } catch (e) {
     console.error(e);

@@ -49,7 +49,7 @@ app.post('/client-info', async (req, res) => {
 
     return res.status(201)
   } catch (e) {
-    console.error(e);
+    console.error("Server error:", e);
     return res.status(500).json({
       message: 'Internal server error'
     });

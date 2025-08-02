@@ -14,7 +14,7 @@ const app = express();
 const port = process.env.PORT || 4000
 
 app.use(cors({
-  origin: "https://itagfinancials.vercel.app/",
+  origin: "https://itagfinancials.vercel.app",
   credentials: true
 }));
 
@@ -32,10 +32,8 @@ app.post('/client-info', async (req, res) => {
       liabilities: req.body.liabilities,
       investments: req.body.investments,
       insurances: req.body.insurances,
-      clientDetails: req.body.clientDetails,
       summary: req.body.summary
     });
-    console.log(newClient);
     // await sendMail({
     //   to: "userlocalhost80@gmail.com",
     //   subject: `New Client Info - ${req.body.personalDetails.fullName}`,
@@ -47,7 +45,7 @@ app.post('/client-info', async (req, res) => {
     //   )
     // });
 
-    return res.status(201)
+    return res.status(201).json({ message: "Client created successfully" });
   } catch (e) {
     console.error("Server error:", e);
     return res.status(500).json({

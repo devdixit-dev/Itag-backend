@@ -92,6 +92,10 @@ app.post('/admin/clients', AuthMiddleware, async (req, res) => {
   });
 });
 
+app.post('/admin/email', AuthMiddleware, async (req, res) => {
+  
+});
+
 // admin login
 app.post('/admin', async (req, res) => {
   const { username, password } = req.body;

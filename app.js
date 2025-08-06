@@ -7,6 +7,7 @@ import { sendMail } from './services/mailer.service.js';
 import { EmailTemp } from './templates/email.temp.js';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
+import Email from './models/email.model.js';
 
 await mongoose.connect(process.env.MONGO_URI, { dbName: process.env.DB_NAME })
   .then(() => { console.log(`DB CONNECTED`) })
@@ -63,6 +64,10 @@ app.post('/client-info', async (req, res) => {
       insurances: req.body.insurances,
       summary: req.body.summary
     });
+    const addEmail = await Email.create({
+      email: req.body.personalDetails.email,
+      source: 'form'
+    });
     // await sendMail({
     //   to: "userlocalhost80@gmail.com",
     //   subject: `New Client Info - ${req.body.personalDetails.fullName}`,
@@ -93,7 +98,7 @@ app.post('/admin/clients', AuthMiddleware, async (req, res) => {
 });
 
 app.post('/admin/email', AuthMiddleware, async (req, res) => {
-  
+
 });
 
 // admin login

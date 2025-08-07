@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 import 'dotenv/config';
 import cors from 'cors';
 import Client from './models/client.model.js';
-import { sendMail } from './services/mailer.service.js';
-import { EmailTemp } from './templates/email.temp.js';
+// import { sendMail } from './services/mailer.service.js';
+// import { EmailTemp } from './templates/email.temp.js';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import Email from './models/email.model.js';
@@ -17,12 +17,14 @@ const app = express();
 const port = process.env.PORT || 4000
 
 app.use(cors({
-  origin: process.env.FRONTEND_PRO_URL || process.env.FRONTEND_DEV_URL,
-  credentials: true
+  origin: "http://localhost:8080",
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(cookieParser());
 app.use(express.json());
+app.use(cookieParser());
 app.use((req, _, next) => {
   console.log(`${req.method} - ${req.url}`);
   next();
@@ -43,7 +45,7 @@ const AuthMiddleware = (req, res, next) => {
 
   if(!checkRole) {
     return res.json({
-      message: `${checkRole} is not auth`
+      message: `${checkRole} is not authoried`
     })
   }
 
@@ -97,9 +99,28 @@ app.post('/admin/clients', AuthMiddleware, async (req, res) => {
   });
 });
 
-app.post('/admin/email', AuthMiddleware, async (req, res) => {
+app.post('/admin/emails', AuthMiddleware, async (req, res) => {
+  const emails = await Email.find().select('email source -_id');
 
+  return res.status(200).json({
+    length: emails.length,
+    emails: emails
+  });
 });
+
+app.post('/admin/add-email', AuthMiddleware, async (req, res) => {
+  const { email, source } = req.body;
+
+  const newEmail = await Email.create({
+    email,
+    source
+  });
+
+  return res.status(200).json({
+    message: 'Email added',
+    email: newEmail
+  });
+})
 
 // admin login
 app.post('/admin', async (req, res) => {
@@ -130,7 +151,8 @@ app.post('/admin', async (req, res) => {
   res.cookie('token', encodeJwt, {
     maxAge: 60 * 60 * 1000,
     secure: true,
-    httpOnly: true
+    httpOnly: true,
+    sameSite: 'none'
   });
 
   return res.json({
@@ -139,6 +161,14 @@ app.post('/admin', async (req, res) => {
   });
 });
 
-app.listen(port, () => {
+app.post('/logout', AuthMiddleware, async(req, res) => {
+  res.clearCookie('token');
+
+  return res.status(200).json({
+    message: 'User logged out successfully 🫡'
+  });
+});
+
+app.listen(port, "0.0.0.0",  () => {
   console.log(`server is running on ${port}`);
 });

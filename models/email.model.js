@@ -6,7 +6,7 @@ const EmailSchema = new mongoose.Schema({
   },
   source: {
     type: String,
-    enum: ['newsletter', 'form']
+    enum: ['newsletter', 'financial_form']
   }
 }, {timestamps: true});
 

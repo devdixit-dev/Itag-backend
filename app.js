@@ -34,7 +34,7 @@ app.use((req, _, next) => {
 const AuthMiddleware = (req, res, next) => {
   const token = req.cookies.token;
 
-  if(!token) {
+  if (!token) {
     return res.status(400).json({
       message: 'No token provided'
     });
@@ -43,7 +43,7 @@ const AuthMiddleware = (req, res, next) => {
   const decodeJwt = jwt.verify(token, process.env.JWT_SEC);
   const checkRole = decodeJwt.role === 'admin' || 'developer'
 
-  if(!checkRole) {
+  if (!checkRole) {
     return res.json({
       message: `${checkRole} is not authoried`
     })
@@ -68,7 +68,7 @@ app.post('/client-info', async (req, res) => {
     });
     const addEmail = await Email.create({
       email: req.body.personalDetails.email,
-      source: 'form'
+      source: 'financial_form'
     });
     // await sendMail({
     //   to: "userlocalhost80@gmail.com",
@@ -86,6 +86,42 @@ app.post('/client-info', async (req, res) => {
     console.error("Server error:", e);
     return res.status(500).json({
       message: 'Internal server error'
+    });
+  }
+});
+
+// user add email - newsletter
+app.post('/newsletter', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        messsage: 'Email is required'
+      });
+    }
+
+    const checkEmail = await Email.findOne({ email });
+
+    if(checkEmail) {
+      return res.status(400).json({
+        message: 'Email already exist'
+      });
+    }
+
+    const addEmail = await Email.create({
+      email: email,
+      source: 'newsletter'
+    });
+
+    return res.status(200).json({
+      message: 'Email subscription added'
+    })
+  }
+  catch(err) {
+    console.log(err);
+    return res.status(500).json({
+      message: `Email subscription error - ${err}`
     });
   }
 });
@@ -126,7 +162,7 @@ app.post('/admin/add-email', AuthMiddleware, async (req, res) => {
 app.post('/admin', async (req, res) => {
   const { username, password } = req.body;
 
-  if(!username || !password) {
+  if (!username || !password) {
     return res.status(400).json({
       message: 'All fields are required for login'
     });
@@ -135,7 +171,7 @@ app.post('/admin', async (req, res) => {
   const isAdmin = username === process.env.ADMIN_USER && password === process.env.ADMIN_PASS
   const isDev = username === process.env.DEV_USER && password === process.env.DEV_PASS
 
-  if(!isAdmin && !isDev) {
+  if (!isAdmin && !isDev) {
     return res.status(400).json({
       message: 'Incorrect email or password'
     });
@@ -146,7 +182,7 @@ app.post('/admin', async (req, res) => {
     role: isAdmin ? 'admin' : 'developer'
   }
 
-  const encodeJwt = jwt.sign(payload, process.env.JWT_SEC, {expiresIn: '1h'});
+  const encodeJwt = jwt.sign(payload, process.env.JWT_SEC, { expiresIn: '1h' });
 
   res.cookie('token', encodeJwt, {
     maxAge: 60 * 60 * 1000,
@@ -162,11 +198,11 @@ app.post('/admin', async (req, res) => {
 });
 
 // admin verify
-app.get('/admin/verify', AuthMiddleware, async(req, res) => {
+app.get('/admin/verify', AuthMiddleware, async (req, res) => {
   res.status(200).json({ loggedIn: true });
 });
 
-app.post('/logout', AuthMiddleware, async(req, res) => {
+app.post('/logout', AuthMiddleware, async (req, res) => {
   res.clearCookie('token');
 
   return res.status(200).json({
@@ -174,6 +210,6 @@ app.post('/logout', AuthMiddleware, async(req, res) => {
   });
 });
 
-app.listen(port, "0.0.0.0",  () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`server is running on ${port}`);
 });

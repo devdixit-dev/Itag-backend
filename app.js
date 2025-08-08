@@ -91,7 +91,7 @@ app.post('/client-info', async (req, res) => {
 });
 
 // admin - get clients
-app.post('/admin/clients', AuthMiddleware, async (req, res) => {
+app.get('/admin/clients', AuthMiddleware, async (req, res) => {
   const allClients = await Client.find();
 
   return res.status(200).json({
@@ -159,6 +159,11 @@ app.post('/admin', async (req, res) => {
     message: `${username} logged in 🎈`,
     role: payload.role
   });
+});
+
+// admin verify
+app.get('/admin/verify', AuthMiddleware, async(req, res) => {
+  res.status(200).json({ loggedIn: true });
 });
 
 app.post('/logout', AuthMiddleware, async(req, res) => {

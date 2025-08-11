@@ -144,20 +144,6 @@ app.post('/admin/emails', AuthMiddleware, async (req, res) => {
   });
 });
 
-app.post('/admin/add-email', AuthMiddleware, async (req, res) => {
-  const { email, source } = req.body;
-
-  const newEmail = await Email.create({
-    email,
-    source
-  });
-
-  return res.status(200).json({
-    message: 'Email added',
-    email: newEmail
-  });
-})
-
 // admin login
 app.post('/admin', async (req, res) => {
   const { username, password } = req.body;
@@ -200,6 +186,19 @@ app.post('/admin', async (req, res) => {
 // admin verify
 app.get('/admin/verify', AuthMiddleware, async (req, res) => {
   res.status(200).json({ loggedIn: true });
+});
+
+// Post a job
+app.post('/admin/post-job', AuthMiddleware, async (req, res) => {
+  try{
+    
+  }
+  catch(err) {
+    console.log(err);
+    return res.status(500).json({
+      message: 'Internal server error'
+    });
+  }
 });
 
 app.post('/logout', AuthMiddleware, async (req, res) => {

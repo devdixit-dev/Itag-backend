@@ -8,6 +8,7 @@ import Client from './models/client.model.js';
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import Email from './models/email.model.js';
+import Job from './models/job.model.js';
 
 await mongoose.connect(process.env.MONGO_URI, { dbName: process.env.DB_NAME })
   .then(() => { console.log(`DB CONNECTED`) })
@@ -31,7 +32,7 @@ app.use((req, _, next) => {
 });
 
 // middlewares
-const AuthMiddleware = (req, res, next) => {
+const AuthMiddleware = async (req, res, next) => {
   const token = req.cookies.token;
 
   if (!token) {
@@ -48,7 +49,7 @@ const AuthMiddleware = (req, res, next) => {
       message: `${checkRole} is not authoried`
     })
   }
-
+  req.user = decodeJwt;
   next();
 }
 
@@ -191,7 +192,28 @@ app.get('/admin/verify', AuthMiddleware, async (req, res) => {
 // Post a job
 app.post('/admin/post-job', AuthMiddleware, async (req, res) => {
   try{
-    
+    const user = req.user;
+    console.log(user);
+
+    const { title, department, location, experience, requirements, responsibilities } = req.body;
+
+    const newJob = await Job.create({
+      title,
+      department,
+      location,
+      experience,
+      requirements,
+      responsibilities,
+      postedBy: user.username
+    });
+
+    console.log("Job post backend data:", newJob);
+
+    return res.status(201).json({
+      message: 'New job posted',
+      job: newJob
+    });
+
   }
   catch(err) {
     console.log(err);

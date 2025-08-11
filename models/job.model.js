@@ -13,19 +13,19 @@ const JobSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  exp: {
+  experience: {
     type: String,
     required: true
   },
-  keyReq: [{
+  requirements: [{
     type: String
   }],
   responsibilities: [{
     type: String
   }],
-  postedBy: [{
-    type: mongoose.Schema.Types.ObjectId
-  }]
+  postedBy: {
+    type: String
+  }
 }, {timestamps: true});
 
 const Job = mongoose.model('Job', JobSchema);

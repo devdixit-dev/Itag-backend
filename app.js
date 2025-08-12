@@ -10,13 +10,16 @@ import jwt from 'jsonwebtoken';
 import Email from './models/email.model.js';
 import Job from './models/job.model.js';
 
+// mongodb connection
 await mongoose.connect(process.env.MONGO_URI, { dbName: process.env.DB_NAME })
-  .then(() => { console.log(`DB CONNECTED`) })
-  .catch((e) => { console.log(`DB ERROR - ${e}`) });
+.then(() => { console.log(`DB CONNECTED`) })
+.catch((e) => { console.log(`DB ERROR - ${e}`) });
 
+// app and port
 const app = express();
 const port = process.env.PORT || 4000
 
+// cors option
 app.use(cors({
   origin: "http://localhost:8080",
   credentials: true,
@@ -24,6 +27,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use((req, _, next) => {
@@ -31,7 +35,7 @@ app.use((req, _, next) => {
   next();
 });
 
-// middlewares
+// auth middleware
 const AuthMiddleware = async (req, res, next) => {
   const token = req.cookies.token;
 
@@ -53,6 +57,7 @@ const AuthMiddleware = async (req, res, next) => {
   next();
 }
 
+// default home route
 app.get('/', (req, res) => {
   res.end('working');
 })
@@ -136,6 +141,7 @@ app.get('/admin/clients', AuthMiddleware, async (req, res) => {
   });
 });
 
+// admin all emails
 app.post('/admin/emails', AuthMiddleware, async (req, res) => {
   const emails = await Email.find().select('email source -_id');
 
@@ -231,6 +237,7 @@ app.post('/admin/post-job', AuthMiddleware, async (req, res) => {
   }
 });
 
+// admin logout
 app.post('/logout', AuthMiddleware, async (req, res) => {
   res.clearCookie('token');
 
@@ -239,6 +246,7 @@ app.post('/logout', AuthMiddleware, async (req, res) => {
   });
 });
 
+// server listen
 app.listen(port, "0.0.0.0", () => {
   console.log(`server is running on ${port}`);
 });

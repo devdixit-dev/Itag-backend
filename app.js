@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import Email from './models/email.model.js';
 import Job from './models/job.model.js';
+import JobApp from './models/jobApp.model.js';
 
 // mongodb connection
 await mongoose.connect(process.env.MONGO_URI, { dbName: process.env.DB_NAME })
@@ -236,6 +237,42 @@ app.post('/admin/post-job', AuthMiddleware, async (req, res) => {
     });
   }
 });
+
+// user apply for a job
+app.post('/apply-job', async (req, res) => {
+  try{
+    const { appliedForRole, fullname, email, phone, intro } = req.body;
+
+    const appliedJob = await JobApp.create({
+      appliedForRole,
+      fullname,
+      email,
+      phone,
+      intro
+    });
+
+    return res.status(200).json({
+      message: 'Job application sent',
+      data: appliedJob
+    });
+  }
+  catch(err) {
+    console.log(err)
+    return res.status(500).json({
+      message: 'Internal server error'
+    });
+  }
+})
+
+// admin job applications
+app.get('/job-apps', AuthMiddleware, async (req, res) => {
+  const jobApps = await JobApp.find().select("-_id");
+
+  return res.status(200).json({
+    message: `Total job apps ${jobApps.length}`,
+    jobApplications: jobApps
+  });
+})
 
 // admin logout
 app.post('/logout', AuthMiddleware, async (req, res) => {

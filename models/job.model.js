@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 
 const JobSchema = new mongoose.Schema({
   title: {
@@ -25,7 +25,10 @@ const JobSchema = new mongoose.Schema({
   }],
   postedBy: {
     type: String
-  }
+  },
+  applications: [{
+    type: mongoose.Schema.Types.ObjectId
+  }]
 }, {timestamps: true});
 
 const Job = mongoose.model('Job', JobSchema);

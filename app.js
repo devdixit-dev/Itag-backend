@@ -22,7 +22,7 @@ const port = process.env.PORT || 4000
 
 // cors option
 app.use(cors({
-  origin: "http://localhost:8080",
+  origin: `${process.env.FRONTEND_DEV_URL}`,
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']

@@ -104,7 +104,7 @@ app.post('/newsletter', async (req, res) => {
 
     const checkEmail = await Email.findOne({ email });
 
-    if(checkEmail) {
+    if (checkEmail) {
       return res.status(400).json({
         message: 'Email already exist'
       });
@@ -119,7 +119,7 @@ app.post('/newsletter', async (req, res) => {
       message: 'Email subscription added'
     })
   }
-  catch(err) {
+  catch (err) {
     console.log(err);
     return res.status(500).json({
       message: `Email subscription error - ${err}`
@@ -191,19 +191,27 @@ app.get('/admin/verify', AuthMiddleware, async (req, res) => {
 
 // Post a job
 app.post('/admin/post-job', AuthMiddleware, async (req, res) => {
-  try{
+  try {
     const user = req.user;
     console.log(user);
 
     const { title, department, location, experience, requirements, responsibilities } = req.body;
+
+    const jobrRequirements = await requirements.split("\n")
+    .map(line => line.trim())
+    .filter(line => line.length);
+
+    const jobResponsibilities = await responsibilities.split("\n")
+    .map(line => line.trim())
+    .filter(line => line.length);
 
     const newJob = await Job.create({
       title,
       department,
       location,
       experience,
-      requirements,
-      responsibilities,
+      requirements: jobrRequirements,
+      responsibilities: jobResponsibilities,
       postedBy: user.username
     });
 
@@ -215,7 +223,7 @@ app.post('/admin/post-job', AuthMiddleware, async (req, res) => {
     });
 
   }
-  catch(err) {
+  catch (err) {
     console.log(err);
     return res.status(500).json({
       message: 'Internal server error'

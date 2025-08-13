@@ -10,18 +10,4 @@ const transporter = mailer.createTransport({
   }
 })
 
-export const sendMail = async ({ to, subject, html }) => {
-  try {
-    await transporter.sendMail({
-      from: process.env.ADMIN_EMAIL,
-      to,
-      subject,
-      html
-    });
-
-    console.log(`Mail sent`);
-  }
-  catch (e) {
-    console.log('Mailer service crashed', e);
-  }
-}
+export default transporter;

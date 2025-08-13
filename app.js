@@ -10,6 +10,9 @@ import jwt from 'jsonwebtoken';
 import Email from './models/email.model.js';
 import Job from './models/job.model.js';
 import JobApp from './models/jobApp.model.js';
+import upload from './services/multer.service.js';
+import transporter from './services/mailer.service.js';
+import fs from "fs";
 
 // mongodb connection
 await mongoose.connect(process.env.MONGO_URI, { dbName: process.env.DB_NAME })
@@ -239,9 +242,13 @@ app.post('/admin/post-job', AuthMiddleware, async (req, res) => {
 });
 
 // user apply for a job
-app.post('/apply-job', async (req, res) => {
-  try{
+app.post('/apply-job', upload.single('resume'), async (req, res) => {
+  try {
     const { appliedForRole, fullname, email, phone, intro } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Resume file is required" });
+    }
 
     const appliedJob = await JobApp.create({
       appliedForRole,
@@ -251,18 +258,34 @@ app.post('/apply-job', async (req, res) => {
       intro
     });
 
+    await transporter.sendMail({
+      from: process.env.ADMIN_EMAIL,
+      to: process.env.ADMIN_EMAIL,
+      subject: "New job application",
+      text: `${fullname} - ${appliedForRole} - ${email} - ${phone}`,
+      attachments: [{
+        filename: req.file.filename,
+        path: req.file.path
+      }]
+    });
+
+    // Delete file after sending
+    fs.unlinkSync(req.file.path);
+    console.log("Resume sent successfully");
+
     return res.status(200).json({
-      message: 'Job application sent',
+      success: true,
+      message: "Job application sent",
       data: appliedJob
     });
-  }
-  catch(err) {
-    console.log(err)
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({
-      message: 'Internal server error'
+      message: "Internal server error"
     });
   }
-})
+});
+
 
 // admin job applications
 app.get('/job-apps', AuthMiddleware, async (req, res) => {

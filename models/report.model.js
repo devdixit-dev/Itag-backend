@@ -9,7 +9,12 @@ const ReportSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  link: {
+  fileName: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  fileLink: {
     type: String,
     required: true
   }

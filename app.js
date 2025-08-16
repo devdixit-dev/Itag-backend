@@ -13,6 +13,7 @@ import JobApp from './models/jobApp.model.js';
 import upload from './services/multer.service.js';
 import transporter from './services/mailer.service.js';
 import fs from "fs";
+import Report from './models/report.model.js';
 
 // mongodb connection
 await mongoose.connect(process.env.MONGO_URI, { dbName: process.env.DB_NAME })
@@ -287,13 +288,58 @@ app.post('/apply-job', upload.single('resume'), async (req, res) => {
 });
 
 // admin - add reports
-app.post('/admin/upload-report', upload.single('report'), async (req, res) => {});
+app.post('/admin/add-report', upload.single('report'), async (req, res) => {
+  try{
+    const { name, type, fileName, fileLink } = req.body;
+
+    const data = {
+      name,
+      type,
+      fileName: req.file.filename,
+      fileLink: req.file.path
+    }
+
+    res.send({
+      success: true,
+      data
+    });
+  }
+  catch(err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    })
+  }
+});
 
 // admin - add guides
-app.post('/admin/upload-guide', upload.single('guide'), async (req, res) => {});
+app.post('/admin/add-guide', AuthMiddleware, upload.single('guide'), async (req, res) => {
+  try{
+    console.log(`Try`)
+  }
+  catch(err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    })
+  }
+});
 
 // admin - add videos
-app.post('/admin/upload-video', async (req, res) => {});
+app.post('/admin/add-video', AuthMiddleware, async (req, res) => {
+  try{
+    console.log(`Try`)
+  }
+  catch(err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    })
+  }
+});
 
 // admin job applications
 app.get('/job-apps', AuthMiddleware, async (req, res) => {

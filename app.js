@@ -286,6 +286,14 @@ app.post('/apply-job', upload.single('resume'), async (req, res) => {
   }
 });
 
+// admin - add reports
+app.post('/admin/upload-report', upload.single('report'), async (req, res) => {});
+
+// admin - add guides
+app.post('/admin/upload-guide', upload.single('guide'), async (req, res) => {});
+
+// admin - add videos
+app.post('/admin/upload-video', async (req, res) => {});
 
 // admin job applications
 app.get('/job-apps', AuthMiddleware, async (req, res) => {

@@ -10,10 +10,9 @@ import jwt from 'jsonwebtoken';
 import Email from './models/email.model.js';
 import Job from './models/job.model.js';
 import JobApp from './models/jobApp.model.js';
-import upload from './services/multer.service.js';
+import upload from './services/cloudinary.service.js';
 import transporter from './services/mailer.service.js';
 import fs from "fs";
-import Report from './models/report.model.js';
 
 // mongodb connection
 await mongoose.connect(process.env.MONGO_URI, { dbName: process.env.DB_NAME })
@@ -34,6 +33,7 @@ app.use(cors({
 
 // middlewares
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use((req, _, next) => {
   console.log(`${req.method} - ${req.url}`);
@@ -290,18 +290,20 @@ app.post('/apply-job', upload.single('resume'), async (req, res) => {
 // admin - add reports
 app.post('/admin/add-report', upload.single('report'), async (req, res) => {
   try{
-    const { name, type, fileName, fileLink } = req.body;
+    const { name, type } = req.body;
+
+    console.log(req.file);
 
     const data = {
       name,
       type,
-      fileName: req.file.filename,
       fileLink: req.file.path
     }
 
     res.send({
       success: true,
-      data
+      message: 'Market report uploaded successfully',
+      data: data
     });
   }
   catch(err) {
@@ -316,7 +318,22 @@ app.post('/admin/add-report', upload.single('report'), async (req, res) => {
 // admin - add guides
 app.post('/admin/add-guide', AuthMiddleware, upload.single('guide'), async (req, res) => {
   try{
-    console.log(`Try`)
+    const { name, desc, category } = req.body;
+
+    console.log(req.file);
+
+    const data = {
+      name,
+      desc,
+      category,
+      fileLink: req.file.path
+    }
+
+    res.send({
+      success: true,
+      message: 'Investment guide uploaded successfully',
+      data: data
+    });
   }
   catch(err) {
     console.log(err);
@@ -330,7 +347,20 @@ app.post('/admin/add-guide', AuthMiddleware, upload.single('guide'), async (req,
 // admin - add videos
 app.post('/admin/add-video', AuthMiddleware, async (req, res) => {
   try{
-    console.log(`Try`)
+    const { name, category, duration, videoLink } = req.body;
+
+    const data = {
+      name,
+      category,
+      duration,
+      videoLink
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Video linked successfully',
+      data: data
+    });
   }
   catch(err) {
     console.log(err);

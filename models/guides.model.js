@@ -13,7 +13,7 @@ const GuideSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  link: {
+  fileLink: {
     type: String,
     required: true
   }

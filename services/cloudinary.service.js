@@ -12,7 +12,8 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "study-materials",
-    allowed_formats: ["pdf"]
+    allowed_formats: ["pdf"],
+    resource_type: "raw"
   },
 });
 

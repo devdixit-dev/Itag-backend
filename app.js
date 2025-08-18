@@ -13,11 +13,12 @@ import JobApp from './models/jobApp.model.js';
 import upload from './services/cloudinary.service.js';
 import transporter from './services/mailer.service.js';
 import fs from "fs";
+import Report from './models/report.model.js';
 
 // mongodb connection
 await mongoose.connect(process.env.MONGO_URI, { dbName: process.env.DB_NAME })
-.then(() => { console.log(`DB CONNECTED`) })
-.catch((e) => { console.log(`DB ERROR - ${e}`) });
+  .then(() => { console.log(`DB CONNECTED`) })
+  .catch((e) => { console.log(`DB ERROR - ${e}`) });
 
 // app and port
 const app = express();
@@ -209,12 +210,12 @@ app.post('/admin/post-job', AuthMiddleware, async (req, res) => {
     const { title, department, location, experience, requirements, responsibilities } = req.body;
 
     const jobrRequirements = await requirements.split("\n")
-    .map(line => line.trim())
-    .filter(line => line.length);
+      .map(line => line.trim())
+      .filter(line => line.length);
 
     const jobResponsibilities = await responsibilities.split("\n")
-    .map(line => line.trim())
-    .filter(line => line.length);
+      .map(line => line.trim())
+      .filter(line => line.length);
 
     const newJob = await Job.create({
       title,
@@ -288,25 +289,31 @@ app.post('/apply-job', upload.single('resume'), async (req, res) => {
 });
 
 // admin - add reports
-app.post('/admin/add-report', upload.single('report'), async (req, res) => {
-  try{
-    const { name, type } = req.body;
-
-    console.log(req.file);
-
-    const data = {
-      name,
-      type,
-      fileLink: req.file.path
+app.post('/admin/add-report', AuthMiddleware, upload.single('report'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded"
+      });
     }
 
-    res.send({
+    const { name, type } = req.body;
+
+    const data = await Report.create({
+      name,
+      type,
+      fileName: req.file.originalname,
+      fileLink: req.file.path
+    });
+
+    return res.json({
       success: true,
       message: 'Market report uploaded successfully',
-      data: data
+      data
     });
   }
-  catch(err) {
+  catch (err) {
     console.log(err);
     return res.status(500).json({
       success: false,
@@ -317,7 +324,7 @@ app.post('/admin/add-report', upload.single('report'), async (req, res) => {
 
 // admin - add guides
 app.post('/admin/add-guide', AuthMiddleware, upload.single('guide'), async (req, res) => {
-  try{
+  try {
     const { name, desc, category } = req.body;
 
     console.log(req.file);
@@ -335,7 +342,7 @@ app.post('/admin/add-guide', AuthMiddleware, upload.single('guide'), async (req,
       data: data
     });
   }
-  catch(err) {
+  catch (err) {
     console.log(err);
     return res.status(500).json({
       success: false,
@@ -346,7 +353,7 @@ app.post('/admin/add-guide', AuthMiddleware, upload.single('guide'), async (req,
 
 // admin - add videos
 app.post('/admin/add-video', AuthMiddleware, async (req, res) => {
-  try{
+  try {
     const { name, category, duration, videoLink } = req.body;
 
     const data = {
@@ -362,7 +369,7 @@ app.post('/admin/add-video', AuthMiddleware, async (req, res) => {
       data: data
     });
   }
-  catch(err) {
+  catch (err) {
     console.log(err);
     return res.status(500).json({
       success: false,

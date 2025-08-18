@@ -327,7 +327,7 @@ app.post('/admin/add-report', AuthMiddleware, upload.single('report'), async (re
 });
 
 // admin - see reports
-app.get('/admin/reports', AuthMiddleware, async (req, res) => {
+app.get('/admin/reports', async (req, res) => {
   const reports = await Report.find().select("-_id");
 
   return res.status(200).json({
@@ -373,7 +373,7 @@ app.post('/admin/add-guide', AuthMiddleware, upload.single('guide'), async (req,
 });
 
 // admin - see guides
-app.get('/admin/guides', AuthMiddleware, async (req, res) => {
+app.get('/admin/guides', async (req, res) => {
   const guides = await Guide.find().select("-_id");
 
   return res.status(200).json({

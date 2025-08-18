@@ -10,10 +10,11 @@ import jwt from 'jsonwebtoken';
 import Email from './models/email.model.js';
 import Job from './models/job.model.js';
 import JobApp from './models/jobApp.model.js';
-import upload from './services/cloudinary.service.js';
+import upload from './services/multer.service.js';
 import transporter from './services/mailer.service.js';
 import fs from "fs";
 import Report from './models/report.model.js';
+import Guide from './models/guide.model.js';
 
 // mongodb connection
 await mongoose.connect(process.env.MONGO_URI, { dbName: process.env.DB_NAME })
@@ -33,6 +34,7 @@ app.use(cors({
 }));
 
 // middlewares
+app.use("/files", express.static("uploads"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -298,13 +300,15 @@ app.post('/admin/add-report', AuthMiddleware, upload.single('report'), async (re
       });
     }
 
+    console.log(req.file);
+
     const { name, type } = req.body;
 
     const data = await Report.create({
       name,
       type,
       fileName: req.file.originalname,
-      fileLink: req.file.path
+      fileLink: `http://localhost:3000/files/${req.file.originalname}`
     });
 
     return res.json({
@@ -322,24 +326,41 @@ app.post('/admin/add-report', AuthMiddleware, upload.single('report'), async (re
   }
 });
 
+// admin - see reports
+app.get('/admin/reports', AuthMiddleware, async (req, res) => {
+  const reports = await Report.find().select("-_id");
+
+  return res.status(200).json({
+    message: `Total reports ${reports.length}`,
+    reports: reports
+  });
+});
+
 // admin - add guides
 app.post('/admin/add-guide', AuthMiddleware, upload.single('guide'), async (req, res) => {
   try {
-    const { name, desc, category } = req.body;
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded"
+      });
+    }
 
     console.log(req.file);
 
-    const data = {
+    const { name, desc, category } = req.body;
+
+    const data = await Guide.create({
       name,
       desc,
       category,
-      fileLink: req.file.path
-    }
+      fileLink: `http://localhost:3000/files/${req.file.originalname}`
+    });
 
-    res.send({
+    return res.json({
       success: true,
-      message: 'Investment guide uploaded successfully',
-      data: data
+      message: 'Guide uploaded successfully',
+      data
     });
   }
   catch (err) {
@@ -349,6 +370,16 @@ app.post('/admin/add-guide', AuthMiddleware, upload.single('guide'), async (req,
       message: 'Internal Server Error'
     })
   }
+});
+
+// admin - see guides
+app.get('/admin/guides', AuthMiddleware, async (req, res) => {
+  const guides = await Guide.find().select("-_id");
+
+  return res.status(200).json({
+    message: `Total job apps ${guides.length}`,
+    guides: guides
+  });
 });
 
 // admin - add videos

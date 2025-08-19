@@ -330,7 +330,7 @@ app.post('/admin/add-report', AuthMiddleware, upload.single('report'), async (re
 
 // admin - see reports
 app.get('/admin/reports', async (req, res) => {
-  const reports = await Report.find().select("-_id");
+  const reports = await Report.find();
 
   return res.status(200).json({
     message: `Total reports ${reports.length}`,
@@ -376,7 +376,7 @@ app.post('/admin/add-guide', AuthMiddleware, upload.single('guide'), async (req,
 
 // admin - see guides
 app.get('/admin/guides', async (req, res) => {
-  const guides = await Guide.find().select("-_id");
+  const guides = await Guide.find();
 
   return res.status(200).json({
     message: `Total job apps ${guides.length}`,
@@ -413,12 +413,96 @@ app.post('/admin/add-video', AuthMiddleware, async (req, res) => {
 
 // admin - see video
 app.get('/admin/videos', async (req, res) => {
-  const videos = await Video.find().select("-_id");
+  const videos = await Video.find();
 
   return res.status(200).json({
     message: `Total videos ${videos.length}`,
     videos: videos
   });
+})
+
+// admin - delete reports
+app.post('/admin/remove/report/:id', AuthMiddleware, async (req, res) => {
+  try{
+    const id = req.params.id;
+
+    const report = await Report.findOneAndDelete({ _id: id });
+
+    if(!report) {
+      return res.status(400).json({
+        success: false,
+        message: 'Report not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Report deleted successfully 🗑️'
+    });
+  }
+  catch(err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    });
+  }
+})
+
+// admin - delete guides
+app.post('/admin/remove/guide/:id', AuthMiddleware, async (req, res) => {
+  try{
+    const id = req.params.id;
+
+    const guide = await Guide.findOneAndDelete({ _id: id });
+
+    if(!guide) {
+      return res.status(400).json({
+        success: false,
+        message: 'Guide not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Guide deleted successfully 🗑️'
+    });
+  }
+  catch(err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    });
+  }
+})
+
+// admin - delete video link
+app.post('/admin/remove/video/:id', AuthMiddleware, async (req, res) => {
+  try{
+    const id = req.params.id;
+
+    const video = await Video.findOneAndDelete({ _id: id });
+
+    if(!video) {
+      return res.status(400).json({
+        success: false,
+        message: 'Video link not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Video deleted successfully 🗑️'
+    });
+  }
+  catch(err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    });
+  }
 })
 
 // admin job applications

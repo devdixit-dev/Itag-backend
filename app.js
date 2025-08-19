@@ -15,6 +15,8 @@ import transporter from './services/mailer.service.js';
 import fs from "fs";
 import Report from './models/report.model.js';
 import Guide from './models/guide.model.js';
+import Video from './models/video.model.js';
+
 
 // mongodb connection
 await mongoose.connect(process.env.MONGO_URI, { dbName: process.env.DB_NAME })
@@ -385,19 +387,19 @@ app.get('/admin/guides', async (req, res) => {
 // admin - add videos
 app.post('/admin/add-video', AuthMiddleware, async (req, res) => {
   try {
-    const { name, category, duration, videoLink } = req.body;
+    const { name, duration, category, videoLink } = req.body;
 
-    const data = {
+    const data = await Video.create({
       name,
-      category,
       duration,
+      category,
       videoLink
-    }
+    });
 
-    return res.status(200).json({
+    return res.json({
       success: true,
-      message: 'Video linked successfully',
-      data: data
+      message: 'Video added successfully',
+      data
     });
   }
   catch (err) {
@@ -408,6 +410,16 @@ app.post('/admin/add-video', AuthMiddleware, async (req, res) => {
     })
   }
 });
+
+// admin - see video
+app.get('/admin/videos', async (req, res) => {
+  const videos = await Video.find().select("-_id");
+
+  return res.status(200).json({
+    message: `Total videos ${videos.length}`,
+    videos: videos
+  });
+})
 
 // admin job applications
 app.get('/job-apps', AuthMiddleware, async (req, res) => {

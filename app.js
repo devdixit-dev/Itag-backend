@@ -121,7 +121,7 @@ app.post('/newsletter', async (req, res) => {
 
     if (checkEmail) {
       return res.status(400).json({
-        message: 'Email already exist'
+        message: 'your email already exist'
       });
     }
 
@@ -142,6 +142,34 @@ app.post('/newsletter', async (req, res) => {
   }
 });
 
+// admin - delete emails
+app.post('/admin/remove/email/:id', AuthMiddleware, async (req, res) => {
+  try{
+    const id = req.params.id;
+
+    const email = await Email.findOneAndDelete({ _id: id });
+
+    if(!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Email deleted successfully 🗑️'
+    });
+  }
+  catch(err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal Server Error'
+    });
+  }
+});
+
 // admin - get clients
 app.get('/admin/clients', AuthMiddleware, async (req, res) => {
   const allClients = await Client.find();
@@ -153,7 +181,7 @@ app.get('/admin/clients', AuthMiddleware, async (req, res) => {
 
 // admin all emails
 app.post('/admin/emails', AuthMiddleware, async (req, res) => {
-  const emails = await Email.find().select('email source -_id');
+  const emails = await Email.find().select('email source');
 
   return res.status(200).json({
     length: emails.length,

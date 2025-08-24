@@ -114,7 +114,7 @@ export const AdminAddReport = async (req, res) => {
       name,
       type,
       fileName: req.file.originalname,
-      fileLink: `http://localhost:3000/files/${req.file.originalname}`
+      fileLink: `${process.env.FRONTEND_BASE_URL}/files/${req.file.originalname}`
     });
 
     return res.json({
@@ -185,7 +185,7 @@ export const AdminAddGuide = async (req, res) => {
       name,
       desc,
       category,
-      fileLink: `http://localhost:3000/files/${req.file.originalname}`
+      fileLink: `${process.env.FRONTEND_BASE_URL}/files/${req.file.originalname}`
     });
 
     return res.json({

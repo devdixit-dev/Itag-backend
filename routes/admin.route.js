@@ -34,17 +34,17 @@ AdminRouter.get('/job-apps', AuthMiddleware, AdminGetAllJobApps);
 
 // Reports
 AdminRouter.post('/add-report', AuthMiddleware, upload.single('report'), AdminAddReport);
-AdminRouter.get('/reports', AuthMiddleware, AdminGetAllReports);
+AdminRouter.get('/reports', AdminGetAllReports);
 AdminRouter.post('/remove/report/:id', AuthMiddleware, AdminRemoveReport);
 
 // Guides
 AdminRouter.post('/add-guide', AuthMiddleware, upload.single('guide'), AdminAddGuide);
-AdminRouter.get('/guides', AuthMiddleware, AdminGetAllGuides);
+AdminRouter.get('/guides', AdminGetAllGuides);
 AdminRouter.post('/remove/guide/:id', AuthMiddleware, AdminRemoveGuide);
 
 // Videos
 AdminRouter.post('/add-video', AuthMiddleware, AdminAddVideo);
-AdminRouter.get('/videos', AuthMiddleware, AdminGetAllVideos);
+AdminRouter.get('/videos', AdminGetAllVideos);
 AdminRouter.post('/remove/video/:id', AuthMiddleware, AdminRemoveVideo);
 
 export default AdminRouter;

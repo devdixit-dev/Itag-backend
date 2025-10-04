@@ -10,7 +10,7 @@ const AuthMiddleware = async (req, res, next) => {
   }
 
   const decodeJwt = jwt.verify(token, process.env.JWT_SEC);
-  const checkRole = decodeJwt.role === 'admin' || 'developer'
+  const checkRole = decodeJwt.role === 'admin' || decodeJwt.role === 'developer'
 
   if (!checkRole) {
     return res.json({

@@ -24,9 +24,9 @@ app.use(cors({
 
 // middlewares
 app.use("/files", express.static("uploads"));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 // routes
 app.use('/user', UserRouter);

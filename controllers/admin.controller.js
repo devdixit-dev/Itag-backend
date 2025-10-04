@@ -4,6 +4,7 @@ import Report from "../models/report.model.js";
 import JobApp from "../models/jobApp.model.js";
 import Guide from "../models/guide.model.js";
 import Video from "../models/video.model.js";
+import Client from "../models/client.model.js";
 
 export const AdminRemoveEmail = async (req, res) => {
   try {

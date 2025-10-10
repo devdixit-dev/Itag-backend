@@ -14,6 +14,9 @@ ConnectDB();
 const app = express();
 const port = process.env.PORT || 4000
 
+// Enable gzip compression
+app.use(compression());
+
 // cors option
 app.use(cors({
   origin: `${process.env.FRONTEND_BASE_URL}`,

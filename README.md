@@ -163,36 +163,15 @@ Server runs at:
 - Protects routes with **AuthMiddleware**  
 - Sanitizes user inputs to prevent XSS/SQL injection  
 - Uses **Helmet.js** and **CORS** for secure HTTP headers  
-- Environment variables managed via `.env`  
-
----
-
-## 🧪 Testing
-
-Run test suites (if available):
-```bash
-npm test
-```
-
-To test APIs manually, import the provided **Postman collection** or use any REST client like Thunder Client.
-
----
-
-## 🚀 Deployment
-
-1. Set `NODE_ENV=production`
-2. Use strong `JWT_SECRET`
-3. Deploy MongoDB on Atlas or self-host
-4. Use PM2 or Docker for runtime process management
-5. Enable HTTPS with NGINX or Reverse Proxy
+- Environment variables managed via `.env`
 
 ---
 
 ## 📬 Contact
 
 **Author:** Dev Dixit  
-**Email:** [your.email@example.com](mailto:your.email@example.com)  
-**GitHub:** [https://github.com/yourusername](https://github.com/yourusername)
+**Email:** [devdixitsocial@gmail.com](mailto:devdixitsocial@gmail.com)  
+**GitHub:** [https://github.com/devdixit-dev](https://github.com/devdixit-dev)
 
 ---
 

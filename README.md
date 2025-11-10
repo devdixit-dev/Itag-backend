@@ -82,8 +82,8 @@ Itag-backend-main/
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/yourusername/Itag-backend-main.git
-cd Itag-backend-main
+git clone https://github.com/devdixit-dev/Itag-backend.git
+cd Itag-backend
 ```
 
 ### 2️⃣ Install Dependencies
